@@ -11,6 +11,8 @@ import win32com.client
 import requests
 
 # win环境下的快速开发脚本
+#path = r"E:\懒人精灵\script\main"
+#pkgPath = r"E:\懒人精灵\out\main.lr"
 
 # 检查localConfig.py是否存在
 if not os.path.exists("localConfig.py"):
@@ -19,12 +21,12 @@ if not os.path.exists("localConfig.py"):
         f.write(
             "# main工程路径: \n"
             + "# 例: mainProjectPath = r"
-            + r'"C:\Users\DazeCake\Documents\Tools\懒人精灵3.8.3\script\main"'
+            + r'"E:\懒人精灵3.8.3\script\main"'
             + "\n"
             + 'mainProjectPath = r""\n'
             + "# 打包的main.lr路径: \n"
             + "# 例: lrPath = r"
-            + r'"C:\Users\DazeCake\Documents\Tools\懒人精灵3.8.3\out\main.lr"'
+            + r'"E:\懒人精灵3.8.3\out\main.lr"'
             + "\n"
             + 'lrPath = r""\n\n'
             + "# 热更新token: \n"
