@@ -127,6 +127,8 @@ if auto_update_gameclient == true then auto_update_game() end
 if cloud.getTaskEnabled() and not cloud_task then
     -- 云控模式冷启动
     -- log("102",102)
+
+    -- 正常启动 如果是定时启动crontab_enable_only=true extra_mode=nil
 elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi) and
     multi_account_enable then
     -- 多帐号模式

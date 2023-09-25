@@ -321,6 +321,7 @@ point = {
     --   class = "android.webkit.WebView",
     --   package = "com.hypergryph.arknights",
     -- },
+    --验证码
     captcha = function()
         if findOne({ id = 'captcha', package = appid }) then
             return findOne({ class = "android.webkit.WebView", package = appid })
@@ -571,9 +572,11 @@ point = {
         package = "com.hypergryph.arknights",
     },
     gesture_capture_ui = { text = "亮屏解锁" },
+    --键盘锁
     keyguard_indication = {
         id = 'com.android.systemui:id/keyguard_indication_area',
     },
+    --表示锁屏输入界面或状态
     keyguard_input = { id = 'com.android.systemui:id/keyguard_host_view' },
     返还规则 = "1447|934|FFFFFF",
     -- 作战进度 = "1042|934|000000",
@@ -1423,6 +1426,7 @@ autojs提供OCR、图像匹配、速度没测过。OCR看现有明日方舟辅�
 本工具致力于低等待耗时实现，因此采用多点找色方案，保证所有point围绕着某个中心进行缩放。
 开发过程中测试3种分辨率 720x1280、1920x1080、2400x1080。
 --]]
+--控制坐标的缩放比例,用于计算转换成新的坐标点
 center = {
     前往下一轮 = "right_center",
     就这么决定了 = "center_center",
@@ -2174,13 +2178,13 @@ distance = {
     ["9"] = nil,
     ["10"] = nil,
 }
-
+--调换分隔符前后的内容并返回,例如a|b 得到b|a
 rotate_point = function(x)
     local d = point_delimeter
     if type(x) ~= 'string' or not x:find(d) then return x end
     return x:gsub('([^' .. d .. ']+)' .. d .. '(.+)', '%2' .. d .. '%1')
 end
-
+--交换资源关卡坐标点,转换成ce5 ce4 ce3.. ce1这种形式
 expand_fight = function()
     local target = point["作战列表"]
     -- log(1114, target)
@@ -2204,7 +2208,14 @@ expand_fight = function()
     end
 end
 expand_fight()
-
+--[===[
+打平point中色点表,从二维打成一维
+如专项调查列表 = {
+        "136|243|000000", "148|387|535353", "148|519|606060", "148|651|101010",
+    }
+打成一维的 { 专项调查列表1 ="136|243|000000",专项调查列表2="148|387|535353",专项调查列表3="148|519|606060"
+}
+]===]
 flatten = function()
     local p = {}
     for k, v in pairs(point) do
@@ -2220,11 +2231,12 @@ flatten = function()
     update(point, p, true)
 end
 flatten()
-
+--返回所有点与第一个点的坐标及偏色
 point2first = function(v)
     return v:match('(%d+)' .. coord_delimeter .. '(%d+)' .. coord_delimeter ..
         '(......)')
 end
+--返回所有点与第一个点的相对坐标关系,xyc分别是横坐标纵坐标和偏色
 point2relative = function(v)
     local fx, fy, fc = point2first(v)
     local dst = ''
@@ -2238,7 +2250,7 @@ point2relative = function(v)
     end
     return dst:sub(1, #dst - 1)
 end
-
+--以1920和1080作为标准分辨率计算出新的坐标点中心,用于转换不同分辨率下的坐标点转换
 point2center = function(src)
     local origin_center = { 0, 0 }
     local new_center = { 0, 0 }
@@ -2274,7 +2286,7 @@ point2center = function(src)
     end
     return origin_center, new_center
 end
-
+-- 转换coords(坐标)
 convert_coords = function(point)
     local origin_center, new_center
     local hs, ws
@@ -2342,7 +2354,7 @@ update_assistant_position = function()
     end
 end
 -- update_assistant_position()
-
+-- 获取point数组中第二维数组所有坐标点组合的矩形区域的边界范围
 point2region = function(v)
     local p, q, l, r, t, b = 0, 0, screen.width - 1, 0, screen.height - 1, 0
     local x, y
@@ -2378,7 +2390,7 @@ rfg = {
 
     打探消息 = { 0, 0, screen.width - 1, screen.height - 1 },
 }
-
+--初始化点的区域,以4个数值为一个数组,比别表示两个点的x,y坐标
 rfl = {}
 first_point = {}
 first_color = {}
@@ -2392,6 +2404,7 @@ update_rfl = function()
             -- log(1410,k,v)
 
             v = point2relative(v)
+            --获取多个色点集合中的第一个色点坐标,也是自适应转换后的坐标点
             first_color[k] = v:match("%d+" .. coord_delimeter .. "%d+" ..
                 coord_delimeter .. "(......)")
             -- log(v)

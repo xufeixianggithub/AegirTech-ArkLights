@@ -832,7 +832,7 @@ findOne = function(x, confidence)
         findOne_game_up_check_last_time = time()
         wait_game_up()
     end
-
+    --保存最原始的point点位 key的信息 大多数情况下是汉字如"面板","首页"等
     local x0 = x
     confidence = confidence or default_findcolor_confidence
 
@@ -854,7 +854,9 @@ findOne = function(x, confidence)
         -- findOne_last_time = time()
         local pos
         -- log(x0, rfl[x0], x, confidence)
+        --保存启动加载point 坐标换算convert_coords后的自适应的坐标点
         if rfl[x0] then
+            --区域多点比色
             if cmpColorEx(x, confidence) == 1 then pos = first_point[x0] end
         else
             local px, py
@@ -1637,7 +1639,9 @@ wait_game_up = function(retry)
     disable_game_up_check = prev
     return wait_game_up(retry + 1)
 end
-
+--这个函数似乎用于解锁设备屏幕。它首先检查是否存在名为 "keyguard_indication" 的节点（通常用于显示解锁提示信息），
+--如果不存在，则认为屏幕已解锁，否则，它会执行一个手势动作，将屏幕向上滑动，以解锁设备。
+--解锁成功后下一次会继续循环调用,此时判断是否存在keyguard_indication节点会变成不存在,则表示屏幕已解锁
 screenLockSwipUp = function()
     if not wait(function()
             local node = findOne("keyguard_indication")
@@ -2003,9 +2007,11 @@ restartapp = function(package)
     closeapp(package)
     wait_game_up()
 end
+--模拟按下电源按钮，关闭或锁定设备的屏幕
 screenoff = function()
     if root_mode then exec([[su root sh -c 'input keyevent 223']]) end
 end
+--模拟按下电源按钮，点亮设备的屏幕
 screenon = function()
     if root_mode then
         exec([[su root sh -c 'input keyevent 224']])
@@ -2442,7 +2448,7 @@ multi_account_config_remove_once_choice = function(append)
     -- log("choice", choice)
     return choice
 end
-
+--选择是否给提取出的全局变量添加一个新的前缀，并将结果存储回全局环境
 transfer_global_variable = function(prefix, save_prefix)
     local stem
     -- 存在了几个月的BUG：遍历key的过程中修改key
@@ -3697,6 +3703,7 @@ assignGlobalVariable = function(t)
     for k, v in pairs(t) do
         -- if string.find(k, "dual") then log(k, v, type(v)) end
         -- if _G[k] then log("_G[k] exist", k, v) end
+
         _G[k] = v
     end
 end
@@ -4624,11 +4631,13 @@ restart_mode_hook = function()
     local f = loadConfig("restart_mode_hook", '')
     -- appendLog("restart_mode_hook: " .. f)
 
+    log("restart_mode_hook:" .. f)
+
     saveConfig("restart_mode_hook", '')
     load(f)()
     restart_mode_hook_applied = true
 end
-
+-- 检查登录频率
 check_login_frequency = function()
     login_times = (login_times or 0) + 1
 
