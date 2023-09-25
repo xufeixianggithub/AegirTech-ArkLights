@@ -1926,6 +1926,8 @@ distance = {
 
     ["CW-6"] = { swip_right_max, -1349 },
 
+    ["GT-5"] = { swip_right_max, -1349 },
+
     ["11-1"] = { swip_right_max, -0 },
     ["11-2"] = { swip_right_max, -209 },
     ["11-3"] = { swip_right_max, -444 },

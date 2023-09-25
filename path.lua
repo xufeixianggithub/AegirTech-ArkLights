@@ -1440,7 +1440,7 @@ update_state = function()
 
     -- 作战统计
     fight_history = {}
-
+    --初始化fight_tick
     fight_tick = 0
     no_success_one_loop = 0
     prev_jump = "基建"
@@ -3235,12 +3235,15 @@ same_page_fight = function(pre, cur)
 
     -- pattern before last - should be same
     -- PR-A-1 == PR-A-2, PR-A-1 != PR-A-2
+    -- 比较最后一个"-"之前的部分
     if pre:gsub("(.*)-.*$", "%1") == cur:gsub("(.*)-.*$", "%1") then
         log("same page fight", pre, cur)
         return true
     end
 
     -- number before last - should be same
+    -- 匹配整个字符串中的最后一个数字，并将该数字捕获，然后将捕获的数字替换为 %1，也就是保留了字符串中的最后一个数字
+    -- 例如 "PR-A-1" 和 "PR-B-1"，其中 "1" 部分相同
     if pre:gsub(".*(%d+)-.*$", "%1") == cur:gsub(".*(%d+)-.*$", "%1") then
         log("same page fight", pre, cur)
         return true
@@ -3253,10 +3256,13 @@ path.轮次作战 = function()
     while not zero_san do
         if #fight == 0 then return true end
         fight_tick = fight_tick % #fight + 1
+        --当只有一个作战关卡时
         if fight_tick == #fight then
+            --未成功的循环次数
             no_success_one_loop = no_success_one_loop + 1
             if no_success_one_loop > 5 then break end
         end
+        --每隔一个小时重启一次游戏或者每隔15分钟重启一次游戏
         if request_memory_clean() then path.跳转("首页") end
 
         cur_fight = fight[fight_tick]
