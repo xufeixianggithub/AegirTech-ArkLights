@@ -298,8 +298,11 @@ mizuki_navigation = function()
         -- end, 5) then return false end
 
         if not wait(function()
-                if findOne("傀影") then return true end
+                if findOne("水月首页") then return true end
                 tap("集成战略")
+                ssleep(0.2)
+                ssleep(10)
+                tap("选中水月副本")
             end, 5) then
             return false
         end
@@ -309,6 +312,7 @@ mizuki_navigation = function()
                 if checkPointColor(mizuki_point.等待开始页面标题) then
                     return true
                 end
+                ssleep(0.2)
                 tap("进入主题")
             end, 5) then
             return false

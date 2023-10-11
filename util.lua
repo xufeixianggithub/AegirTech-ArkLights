@@ -1403,6 +1403,7 @@ end
 -- x2,y2 => destination
 -- d => direction
 deploy2 = function(idx, total, x2, y2, d)
+    --在松散模式下，每个操作员的宽度
     local max_op_width = scale(178) --  in loose mode, each operator's width
     local x1
     if total * max_op_width > screen.width then
@@ -1423,6 +1424,7 @@ deploy = function(x1, x2, y2, d)
     d = d or 2
     d = ({ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } })[d]
     d = { d[1] * 500, d[2] * 500 }
+    --拖动
     local dragd = 500
     local dird = 200
     local delay = 150 -- 有人卡这儿？
