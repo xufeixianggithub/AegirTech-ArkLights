@@ -178,7 +178,7 @@ path.水月与深蓝之树前瞻投资 = function()
         local ans = wait(function()
             ssleep(.5)
             -- if not findOne("水月_常规行动") then return 0 end
-            local x = ocr("战略源石锭") or {}
+            local x = ocrForTextPoint("战略源石锭") or {}
             log(4195, x)
             x = (x[1] or {}).text or ""
             x = number_ocr_correct(x)
@@ -331,6 +331,7 @@ path.水月与深蓝之树前瞻投资 = function()
                 reset_wait_start_time()
             end
             tap("战略确认")
+            ssleep(.2)
             tap("继续探索")
         end, 20) then
         -- 初始选难度
@@ -354,6 +355,8 @@ path.水月与深蓝之树前瞻投资 = function()
         mizuki_point.招募组合进度条,
         "点击近卫分队", 0.5)
 
+    ssleep(.2)
+
     log("选择招募")
     tapUntilCheckedPointColor(mizuki_point.取长补短,
         mizuki_point.初始招募进度条,
@@ -364,7 +367,9 @@ path.水月与深蓝之树前瞻投资 = function()
     if not wait(function()
             if findOne("确认招募") then return true end
             if findOne("剿灭说明") then tap("剿灭说明") end
+            ssleep(.2)
             tap("辅助招募券")
+            ssleep(.4)
             tap("招募说明关闭")
         end, 10) then
         return false
@@ -389,7 +394,9 @@ path.水月与深蓝之树前瞻投资 = function()
 
     log("招募近卫")
     if not wait(function()
+            ssleep(.2)
             tap("近卫招募券")
+            ssleep(.4)
             tap("招募说明关闭")
             -- if not findOne("水月_初始招募") and findOne("确认招募") then
             --     return true
@@ -437,7 +444,9 @@ path.水月与深蓝之树前瞻投资 = function()
     if not single_man_operation then
         log("招募医疗")
         if not wait(function()
+                ssleep(.2)
                 tap("医疗招募券")
+                ssleep(.4)
                 tap("招募说明关闭")
                 if not checkPointColor(mizuki_point.初始招募进度条, 0.98) and findOne("确认招募") then
                     return true
@@ -472,7 +481,9 @@ path.水月与深蓝之树前瞻投资 = function()
     else
         log("不招募医疗")
         if not wait(function()
+                ssleep(0.2)
                 tap("医疗招募券")
+                ssleep(0.4)
                 tap("招募说明关闭")
                 if not checkPointColor(mizuki_point.初始招募进度条, 0.98) and findOne("确认招募") then
                     return true
@@ -522,6 +533,8 @@ path.水月与深蓝之树前瞻投资 = function()
     end
 
     local firstFight = true
+    toast("准备执行第一次作战")
+    ssleep(1)
     -- 第一关作战
     if not mizuki_fight(firstFight) then
         log("第一关作战出现问题")

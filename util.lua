@@ -884,6 +884,15 @@ tap = function(x, noretry, allow_outside_game)
     end
 
     local x0 = x
+    if(type(x0) == "string") then
+        toast("tap x0:" .. x0)
+        sleep(200)
+    end
+
+    if(type(x0) == "table") then
+        toast("tap table x0:" .. table2string(x0))
+        sleep(300)
+    end
     if x == nil then return end
     if x == true then return true end
     if type(x) == "function" then return x() end
@@ -1738,7 +1747,7 @@ ocr_fast = function(x1, y1, x2, y2, timeout)
     local status, text, info
     wait(function()
         if status then return true end
-        status, text, info = pcall(ocr, x1, y1, x2, y2)
+        status, text, info = pcall(ocrForTextPoint, x1, y1, x2, y2)
     end, timeout)
     if not status then
         text = nil
@@ -4445,7 +4454,7 @@ hideControlBar = function() showControlBar(false) end
 --   end
 -- end
 
-ocr = function(r, max_height)
+ocrForTextPoint = function(r, max_height)
     -- releaseCapture()
     r = point[r]
     log("ocrinput", r, max_height)
@@ -4457,6 +4466,7 @@ ocr = function(r, max_height)
     if max_height then
         r = table.filter(r, function(x) return (x.b - x.t) <= max_height end)
     end
+    toast("ocroutput"..table2string(r))
     log("ocroutput", r)
     return r
 end

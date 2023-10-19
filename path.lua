@@ -3237,7 +3237,7 @@ path.信用购买 = function()
             x = str2int(x, 0)
             y = str2int(y, 0)
             point.t = { x - scale(105), y, x + scale(105), y + scale(46) }
-            local r = ocr("t")
+            local r = ocrForTextPoint("t")
             if #r > 0 and r[1].text:includes(high_goods) then
                 table.insert(first_want, i)
             elseif #r > 0 and r[1].text:includes(low_goods) then
@@ -3551,7 +3551,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
 
         local deadline = {}
         wait(function()
-            deadline = ocr("理智药到期时间范围")
+            deadline = ocrForTextPoint("理智药到期时间范围")
             if #deadline == 1 and deadline[1].text:includes({ "天", "时" }) then
                 return true
             end
@@ -4646,7 +4646,7 @@ path.ss活动任务与商店 = function()
         -- “剩余” 左上角优先
         local left = table.cat(map(function(x)
             point.r = { scale(1), scale(x), screen.width - scale(1), scale(x + 50) }
-            return ocr('r')
+            return ocrForTextPoint('r')
         end, { 459, 699, 939 }))
 
         table.sort(left, function(a, b)
@@ -4837,7 +4837,7 @@ path.活动商店 = function()
         -- “剩余” 左上角优先
         local left = table.cat(map(function(x)
             point.r = { scale(1), scale(x), screen.width - scale(1), scale(x + 50) }
-            return ocr('r')
+            return ocrForTextPoint('r')
         end, { 459, 699, 939 }))
 
         table.sort(left, function(a, b)
@@ -5295,7 +5295,7 @@ path.公开招募 = function()
             g = function(pre_tags)
                 local tags, r
                 wait(function()
-                    r = ocr("公开招募标签框范围")
+                    r = ocrForTextPoint("公开招募标签框范围")
                     tags = {}
                     for _, p in pairs(r) do
                         p.text = tagFix(p.text)             -- 替换常见错别字
@@ -5991,7 +5991,7 @@ path.前瞻投资 = function(lighter)
         local ans = wait(function()
             ssleep(.5)
             -- if not findOne("常规行动") then return 0 end
-            local x = ocr("战略源石锭") or {}
+            local x = ocrForTextPoint("战略源石锭") or {}
             log(4195, x)
             x = (x[1] or {}).text or ""
             x = number_ocr_correct(x)
@@ -6322,7 +6322,7 @@ path.前瞻投资 = function(lighter)
 
         local operator
         if not wait(function()
-                operator = ocr("战略助战干员范围")
+                operator = ocrForTextPoint("战略助战干员范围")
                 if #operator > 3 then return true end
             end, 5) then
             stop("找不到助战干员", 'cur')
@@ -6425,7 +6425,7 @@ path.前瞻投资 = function(lighter)
 
         local cur = {}
         if not wait(function()
-                cur = ocr("幻觉范围")
+                cur = ocrForTextPoint("幻觉范围")
 
                 -- 分割
                 for _, v in pairs(cur) do
@@ -6494,6 +6494,7 @@ path.前瞻投资 = function(lighter)
         end
         for k, v in pairs(unexpect) do
             unexpect[k] = {
+                -- 因为关卡图片的不期而遇图标不一样,所以可以通过坐标点直接判定认为是不期而遇
                 text = findOne(v) and "不期而遇" or '作战',
                 l = str2int(point[v]:match("^(%d+)|"), 0),
                 t = str2int(point[v]:match("^%d+|(%d+)|"), 0),
@@ -6543,11 +6544,13 @@ path.前瞻投资 = function(lighter)
             function(x) return x.text == "不期而遇" end)
 
         -- 2 走 3 且 3只有中间为不期而遇时，确认2的上还是下来的
+        -- 即第一列只有两个关卡,且下方的关卡是只有一个箭头走向第二列的情况
     elseif #unexpect2ocr == 3 and unexpect2ocr[2].text == '不期而遇' and
         #unexpect1ocr == 2 and unexpect1ocr[1].text == '不期而遇' and
         not from_bottom_node then
         unexpect2 = unexpect2ocr[2]
         unexpect1 = unexpect1ocr[1]
+        -- 即第一列只有两个关卡,且下方的关卡是有两个箭头走向第二列的情况
     elseif #unexpect2ocr == 3 and unexpect2ocr[2].text == '不期而遇' and
         #unexpect1ocr == 2 and unexpect1ocr[2].text == '不期而遇' and
         from_bottom_node then
@@ -6569,7 +6572,7 @@ path.前瞻投资 = function(lighter)
     -- check which fight
     local fight1ocr = {}
     if not wait(function()
-            fight1ocr = ocr("第一层作战")
+            fight1ocr = ocrForTextPoint("第一层作战")
 
             if #fight1ocr > 1 then
                 log("4880", 4880, fight1ocr)
@@ -6858,8 +6861,8 @@ path.前瞻投资 = function(lighter)
     end
 
     local last_time_see_help
-
     -- 不期而遇1 两次尝试
+    -- 打完作战关卡后,点击尝试不期而遇
     tap({ point.第一层下一个[1], unexpect1.t })
     -- ssleep(.2)
     if not appear("进入界面") then return end
@@ -6977,9 +6980,9 @@ path.前瞻投资 = function(lighter)
         end
         local need_goods = zl_need_goods:filterSplit()
         local goods1 = table.join(map(function(x) return x.text end,
-            ocr("战略第一行商品范围")))
+            ocrForTextPoint("战略第一行商品范围")))
         local goods2 = table.join(map(function(x) return x.text end,
-            ocr("战略第二行商品范围")))
+            ocrForTextPoint("战略第二行商品范围")))
         local goods = table.join({ goods1, goods2 })
         if goods:includes(need_goods) then
             stop("已遇到所需商品" .. goods, '', true, true)
@@ -7132,7 +7135,7 @@ path.跳过剧情 = function()
     ssleep(2)
     local txt = nil
     if not wait(function()
-            txt = ocr("fullscreen")
+            txt = ocrForTextPoint("fullscreen")
             txt = table.findv(txt, function(x) return x.text:find('跳过剧情') end)
             if txt then return true end
         end, 5) then

@@ -11,6 +11,26 @@
 --  请在函数上方添加注解，尽可能的说明函数用途
 -- ===========================================
 
+matrixOcr=function(r)
+    local d1 = scale(math.random(-1, 1))
+    local d2 = scale(math.random(-1, 1))
+    local d3 = scale(math.random(-1, 1))
+    local d4 = scale(math.random(-1, 1))
+
+    local x1=r[1] + d1
+    local y1=r[2] + d2
+    local x2=r[3] + d3
+    local y2=r[4] + d4
+
+    local str = ocr(x1, y1, x2, y2,"FFFFFF-101010",0.90)
+
+    if str~=nil then
+        toast("ocroutput"..str)
+        ssleep(.3)
+    end
+
+    return nil
+end
 
 -- 以字符串格式找色
 findOneStr = function(x, confidence)
@@ -298,17 +318,36 @@ mizuki_navigation = function()
         -- end, 5) then return false end
 
         if not wait(function()
-                if findOne("水月首页") then return true end
+                if findOne("水月副本选中标识") then return true end
+                ssleep(0.2)
                 tap("集成战略")
                 ssleep(0.2)
-                ssleep(10)
                 tap("选中水月副本")
             end, 5) then
             return false
         end
 
-
         if not wait(function()
+            if findOne("水月首页") then return true end
+            ssleep(0.2)
+            tap("进入主题")
+        end, 5) then
+            return false
+        end
+
+        --[[if not wait(function()
+            if findOne("常规行动") then return true end
+            if findOne("傀影与猩红孤钻") then
+                tap("进入主题")
+            else
+                tap("集成战略列表1")
+            end
+        end, 5) then
+            return
+        end]]
+
+
+        --[[if not wait(function()
                 if checkPointColor(mizuki_point.等待开始页面标题) then
                     return true
                 end
@@ -316,7 +355,7 @@ mizuki_navigation = function()
                 tap("进入主题")
             end, 5) then
             return false
-        end
+        end]]
     end
     log("常规行动选中")
     return true
@@ -340,7 +379,7 @@ mizuki_help_fight = function(reflashNum)
 
     local operator
     if not wait(function()
-            operator = ocr("战略助战干员范围")
+            operator = ocrForTextPoint("战略助战干员范围")
             if #operator > 3 then return true end
         end, 5) then
         stop("找不到助战干员", 'cur')
@@ -489,49 +528,94 @@ mizuki_cognition = function()
     return true
 end
 
+mizuki_fight_select2 = function()
+    toast("new mizuki_fight_select 第一次作战")
+    local select_fight = nil
+    if not wait(function()
+        local a=setDict(0, "水月.txt") -- 字库需要放到资源文件中
+        local b=useDict(0)
+        toast("内层wait 函数 a,b" .. tostring(a) ..tostring(b) )
 
+        toast("外层wait 函数 ")
+
+        local select_fight = nil
+        if not wait(function() end,5)then
+            toast("内层wait 函数")
+            return true
+        end
+
+    end,5)then
+
+        return select_fight
+    end
+end
 
 -- 水月肉鸽作战选择器
 mizuki_fight_select = function()
+    toast("mizuki_fight_select 第一次作战")
     local select_fight = nil
+    local ocrRes=nil
     if not wait(function()
-            setDict(0, "水月.txt") -- 字库需要放到资源文件中
-            useDict(0)
             if not wait(function()
                     -- 战斗
-                    select_fight = matrixOcr(mizuki_point.水月关卡标题坐标1[1],
+                    --[[select_fight = matrixOcr(mizuki_point.水月关卡标题坐标1[1],
                         mizuki_point.水月关卡标题坐标1[2],
                         mizuki_point.水月关卡标题坐标1[3],
                         mizuki_point.水月关卡标题坐标1[4],
-                        "FFFFFF", 0.90)
+                        "FFFFFF", 0.90)]]
+                setDict(0, "水月.txt") -- 字库需要放到资源文件中
+                useDict(0)
+                select_fight = matrixOcr(mizuki_point.水月关卡标题坐标1)
+                -- select_fight=ocrRes.text
+                    --toast("内层wait 函数 select_fight1" ..select_fight)
+                    ssleep(1)
                     if select_fight ~= nil then
                         log(select_fight)
                         return true
                     end
                     -- 不期而遇/地区委托/诡异行商
-                    select_fight = matrixOcr(mizuki_point.水月关卡标题坐标2[1],
+                    --[[select_fight = matrixOcr(mizuki_point.水月关卡标题坐标2[1],
                         mizuki_point.水月关卡标题坐标2[2],
                         mizuki_point.水月关卡标题坐标2[3],
                         mizuki_point.水月关卡标题坐标2[4],
-                        "FFFFFF", 0.90)
+                        "FFFFFF", 0.90)]]
+                    setDict(0, "水月.txt") -- 字库需要放到资源文件中
+                    useDict(0)
+                    select_fight = matrixOcr(mizuki_point.水月关卡标题坐标2)
+                    --toast("内层wait 函数 select_fight2" ..select_fight)
                     if select_fight ~= nil then
                         log(select_fight)
                         return true
                     end
                     -- 紧急战斗识别区域
-                    select_fight = matrixOcr(mizuki_point.水月关卡标题坐标3[1],
+                    --[[select_fight = matrixOcr(mizuki_point.水月关卡标题坐标3[1],
                         mizuki_point.水月关卡标题坐标3[2],
                         mizuki_point.水月关卡标题坐标3[3],
                         mizuki_point.水月关卡标题坐标3[4],
-                        "FFFFFF", 0.90)
+                        "FFFFFF", 0.90)]]
+                    setDict(0, "水月.txt") -- 字库需要放到资源文件中
+                    useDict(0)
+                    select_fight = matrixOcr(mizuki_point.水月关卡标题坐标3)
+                    -- toast("内层wait 函数 select_fight3" ..select_fight)
                     if select_fight ~= nil then
                         log(select_fight)
                         return true
                     end
-                end, 5) then
+                end, 10) then
+                toast("ocr识别超时,识别失败 mizuki_fight_select")
                 log("关卡识别错误")
                 return mizuki_restart("关卡识别错误")
             end
+
+        if(type(select_fight) == "string") then
+            toast("select_fight:" .. select_fight)
+            sleep(200)
+        end
+
+        if(type(select_fight) == "table") then
+            toast("table select_fight:" .. table2string(select_fight))
+            sleep(300)
+        end
 
             if #select_fight > 1 then
                 if select_fight:includes({ "排", "反", "应" }) then
@@ -570,13 +654,16 @@ mizuki_fight_select = function()
                 elseif select_fight:includes({ "兴", "致", "盎", "然" }) then
                     select_fight = "兴致盎然"
                 else
+                    toast("不知道什么作战:" .. select_fight)
                     log("不知道什么作战：" .. select_fight)
                     return
                 end
                 log("作战: " .. select_fight)
+                toast("作战:" .. select_fight)
                 return true
             end
-        end, 5) then
+        end, 20) then
+        toast("不知道第一个作战是什么")
         stop("不知道第一个作战是什么", 'cur')
         return
     end
@@ -733,7 +820,9 @@ mizuki_level_type = function(count)
             end
         end, 3)
     end
-
+    toast("mizuki_level_type 关卡类型判断器 ")
+    ssleep(.5)
+    toast("mizuki_level_type 关卡类型判断器结果:" .. table2string(res))
     -- log(res)
     return res
 end
@@ -780,6 +869,8 @@ mizuki_level_selecter = function(input_info)
     for k, v in pairs(info) do
         if not info[k].key then
             if wait(function()
+                    toast("选中关卡时的坐标点".. table2string(info[k].pos))
+                    ssleep(.5)
                     tap(info[k].pos)
                     if waitUntilFindColor(mizuki_point.选中关卡, 1) then return true end
                 end, 3) then
@@ -858,11 +949,14 @@ mizuki_unexpect_solve = function()
     end
 
     if not wait(function()
-            setDict(0, "水月_不期而遇.txt") -- 字库需要放到资源文件中
+            --[[setDict(0, "水月_不期而遇.txt") -- 字库需要放到资源文件中
             useDict(0)
             select_unexpect = matrixOcr(unexpect_area[1], unexpect_area[2],
                 unexpect_area[3], unexpect_area[4],
-                "008AFF-215682", 0.90)
+                "008AFF-215682", 0.90)]]
+            setDict(1, "水月_不期而遇.txt") -- 字库需要放到资源文件中
+            useDict(1)
+            select_unexpect=matrixOcr(mizuki_point.不期而遇范围)
             if select_unexpect ~= nil then
                 log(select_unexpect)
                 return true
@@ -1048,6 +1142,9 @@ end
 
 -- 水月肉鸽托管战斗
 mizuki_fight = function(firstFight)
+    toast("new mizuki_fight firstFight00")
+    ssleep(.5)
+    --toast("new mizuki_fight firstFight" .. tostring(firstFight))
     local now_fight = mizuki_fight_select()
 
     -- 不期而遇
@@ -1201,7 +1298,7 @@ mizuki_fight = function(firstFight)
     return true
 end
 
--- 水月肉鸽战斗后拾取
+-- 水月肉鸽战斗后拾取  getTheBooty意思是获得战利品
 mizuki_after_fight = function()
     local getTheBooty = function(x)
         if checkPointColor(x) then tap({ x[1], x[2] }) end
@@ -1316,9 +1413,9 @@ mizuki_buy = function()
         end
         local need_goods = zl_need_goods:filterSplit()
         local goods1 = table.join(map(function(x) return x.text end,
-            ocr("战略第一行商品范围")))
+            ocrForTextPoint("战略第一行商品范围")))
         local goods2 = table.join(map(function(x) return x.text end,
-            ocr("战略第二行商品范围")))
+            ocrForTextPoint("战略第二行商品范围")))
         local goods = table.join({ goods1, goods2 })
         if goods:includes(need_goods) then
             stop("已遇到所需商品" .. goods, '', true, true)
