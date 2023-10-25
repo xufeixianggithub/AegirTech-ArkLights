@@ -4462,6 +4462,7 @@ path.活动 = function(x)
       {point = {{scale(40), scale(600)}, {scale(40), scale(0)}}, duration = 500},
     }
     local level = str2int(x:sub(#x), 1)
+
     if level > 4 then -- 5-10关在下一页
         gesture(paths)
         ssleep(1)
